@@ -1,0 +1,11 @@
+= kujaku do |k|
+  - k.text
+  - k.helper :journal_period_crit, :label => :accounts_only_used_at.tl, :default => "", :include_blank => :no_particular_periods
+
+- main_toolbar do |t|
+  = t.new params: { redirect: nil }
+  = t.action :load
+
+= major_accounts_tabs_tag
+
+= main_list

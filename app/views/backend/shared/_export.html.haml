@@ -1,0 +1,24 @@
+- attrs = {}
+- attrs[:id] = modal_id if defined? modal_id
+- attrs[:title] = title if defined? title
+- attrs[:title] ||= :printing_document.tl(document: nature.human_name)
+= modal(attrs) do
+  - if Document.of(nature.name, key).any?
+    .modal-body.thumbs
+      - Document.of(nature.name, key).each do |document|
+        .thumb
+          = link_to(backend_document_path(document, format: :pdf)) do
+            = image_tag(backend_document_path(document, format: :jpg))
+          = link_to(backend_document_path(document)) do
+            .archived-at= document.updated_at.l
+            .template-name= document.template_name
+  - else
+    .modal-body
+      .placeholding-message= :no_archived_prints.tn
+  .modal-footer
+    - templates = DocumentTemplate.of_nature(nature.name.to_s)
+    - if templates.any?
+      = dropdown_menu_button(:print) do |menu|
+        - templates.each do |template|
+          - menu.item(template.name, params.merge(format: :pdf, template: template.id, key: key))
+    = button_tag(:close.tl, class: 'btn btn-default', data: { dismiss: 'modal' })

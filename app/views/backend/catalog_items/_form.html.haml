@@ -1,0 +1,18 @@
+- all_taxes_included = f.object.catalog ? f.object.catalog.all_taxes_included : nil
+= field_set do
+  .control-group
+    .controls
+  = f.association :catalog
+  = f.referenced_association :variant
+  = f.input(:amount, wrapper: :append) do
+    = f.input_field :amount
+    - if all_taxes_included
+      %span.add-on= :unit_price_amount_with_taxes.tl
+    - else
+      %span.add-on= :unit_price_amount.tl
+  - if all_taxes_included
+    = f.referenced_association :reference_tax
+  = f.input :commercial_name
+  = f.input :commercial_description
+  = f.custom_fields
+

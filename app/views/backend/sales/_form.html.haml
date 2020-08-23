@@ -1,0 +1,62 @@
+= field_set do
+  - if f.object.new_record?
+    - if params[:affair_id]
+      - f.object.affair = SaleAffair.find(params[:affair_id])
+    - if f.object.affair
+      = f.association :affair, as: :hidden
+  .delivery-item
+    = f.referenced_association :client, input_html: {data: {product_of_delivery_item: {url: backend_entity_path("RECORD_ID", format: :json)}}}
+    = f.subset :addresses, depend_on: :client
+  -# = f.input :expired_at
+  = f.input :invoiced_at, wrapper_html: { class: 'apply-fy-date' }
+  %span.hidden#financial-year-dates{ financial_year_started_on_stopped_on }
+    = :warning_date_not_in_period.tl
+  = f.association :nature, as: :hidden
+  = f.referenced_association :responsible, source: {scope: :users}, new: {employed: 1}
+  = f.referenced_association :transporter, source: :transporters
+  = f.input :description
+
+  - if f.object.credited_sale
+    = f.association :affair, as: :hidden
+    = f.association :credited_sale, as: :hidden
+  - else
+    = f.input :letter_format, :show => :letter_options
+    #letter_options
+      = f.input :subject
+      = f.input :function_title
+      = f.input :introduction
+      = f.input :conclusion
+  = f.custom_fields
+
+- if f.object.draft?
+  = field_set Sale.human_attribute_name(:items) do
+    .items
+      %table#items-table
+        %thead
+          %tr
+            %th= SaleItem.human_attribute_name(:variant)
+            %th= Parcel.human_attribute_name(:number) if f.object.parcels.any?
+            %th= SaleItem.human_attribute_name(:quantity)
+            %th= SaleItem.human_attribute_name(:unit_pretax_amount)
+            %th= SaleItem.human_attribute_name(:tax)
+            %th= SaleItem.human_attribute_name(:reduction_percentage)
+            %th= SaleItem.human_attribute_name(:pretax_amount)
+            %th= SaleItem.human_attribute_name(:amount)
+            %th= SaleItem.human_attribute_name(:currency)
+            %th
+        - precision = Nomen::Currency[f.object.currency].precision
+        %tfoot
+          %tr.total
+            %th
+              - unless f.object.credited_sale
+                = link_to_add_association :add_item.tl, f, :items, partial: 'item_fields', data: { association_insertion_node: '#items-table', association_insertion_method: :append }, class: "btn primary"
+            - colspan = f.object.parcels.any? ? 6 : 5
+            %th{colspan: colspan}= :total.tl
+            %td#pta.decimal{ data: { use: ".pta", calculate: "sum", calculate_round: precision } }= f.object.pretax_amount
+            %td#wta.decimal{ data: { use: ".wta", calculate: "sum", calculate_round: precision } }= f.object.amount
+            %td= f.object.currency
+            %th
+        = f.simple_fields_for :items, f.object.items.sort_by(&:id) do |item|
+          = render 'item_fields', f: item
+
+= f.attachments_field_set

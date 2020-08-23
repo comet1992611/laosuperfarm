@@ -1,0 +1,43 @@
+- main_toolbar do |t|
+  = t.edit resource
+  = t.export :cultivable_zone_sheet, key: :work_number
+  = t.destroy
+
+- main_period_selector(:year)
+
+= main_informations attachment: true do
+  = mini_map(resource)
+  = infos do
+    .med-info
+      %span.title= CultivableZone.human_attribute_name(:work_number)
+      %span.value= resource.work_number
+    - if resource.production_system
+      .med-info
+        %span.title= CultivableZone.human_attribute_name(:production_system)
+        %span.value= resource.human_production_system_name
+    - if resource.soil_nature
+      .med-info
+        %span.title= CultivableZone.human_attribute_name(:soil_nature)
+        %span.value= resource.human_soil_nature_name
+    .med-info
+      %span.title= CultivableZone.human_attribute_name(:net_surface_area)
+      %span.value= resource.human_shape_area
+    - if resource.current_cultivations.any?
+      .med-info
+        %span.title= :current_cultivation.tl
+        %span.value
+          %i.picto{class: "plant"}
+          - list = resource.current_cultivations.collect { |c| link_to(c.name, {controller: c.type.tableize, action: :show, id: c.id}) }
+          = list.to_sentence.html_safe
+
+= cobbles do |c|
+
+  - c.cobble :weather do
+    = cell :weather, params: {centroid: resource.shape.centroid}
+
+  - c.cobble(:productions) do
+    = cobble_list(:productions)
+  -# c.cobble(:contained_products) do
+    = cobble_list(:contained_products)
+  -# c.cobble(:intervention_product_parameters) do
+    = cobble_list(:intervention_product_parameters)

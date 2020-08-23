@@ -1,0 +1,42 @@
+- series = []
+- interventions = Intervention.real.of_civil_year(@campaign.harvest_year)
+- if @campaign && interventions.any?
+  :ruby
+    started_at = interventions.reorder(:started_at).first.started_at.to_date
+    stopped_at = interventions.reorder(:started_at).last.stopped_at.to_date
+
+    unit = Nomen::Unit[:hour]
+
+    cost_unit = Nomen::Currency[Preference[:currency]]
+
+    categories = {}
+
+    date = started_at
+    stopped_at = started_at + 1 if started_at >= stopped_at
+    while date < stopped_at
+      categories[date.year.to_s + date.month.to_s.rjust(3, '0')] = date.l(format: "%b %Y")
+      date = date >> 1
+    end
+
+    # data for bar chart times by activities and by month
+    Activity.actives.find_each do |activity|
+      targets = activity.productions.map(&:support).compact
+      interventions = Intervention.real.with_targets(targets).of_civil_year(@campaign.harvest_year).reorder(:started_at)
+      if interventions.any?
+        sums = interventions.sums_of_periods.sort.inject({}) do |hash, period|
+          hash[period.expr.to_i.to_s] = period.sum.to_i.in_second.in(unit).round(2).to_f
+          hash
+        end
+        series << { name: activity.name, data: normalize_serie(sums, categories.keys), tooltip: {value_suffix: unit.symbol }, color: activity.color, stack: 'time'}
+        #cost_sums = interventions.inject({}) do |hash, i|
+        #  hash[i.started_at.year.to_s + '0' + i.started_at.month.to_s] = i.total_cost.to_s.to_f
+        #  hash
+        #end
+        #series << { name: activity.name, data: normalize_serie(cost_sums, categories.keys), tooltip: {value_suffix: cost_unit.symbol }, color: activity.color, stack: 'cost'}
+      end
+    end
+
+- if series.any?
+  = column_highcharts(series, y_axis: {title: {text: :duration.tl}, stack_labels: {enabled: true, format: "{total} #{unit.symbol}"}, labels: { format: "{value} #{unit.symbol}" }}, x_axis: { categories: categories.values}, legend: true, plot_options: { column: {stacking: 'normal'}})
+- else
+  = no_data

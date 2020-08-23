@@ -1,0 +1,9 @@
+:ruby
+  classes = []
+  classes << :collapsed if collapsed
+.kujaku{class: classes, id: kujaku.uid}
+  - if with_form
+    = form_tag(url, method: :get) do
+      = render "backend/shared/kujaku/body", kujaku: kujaku
+  - else
+    = render "backend/shared/kujaku/body", kujaku: kujaku

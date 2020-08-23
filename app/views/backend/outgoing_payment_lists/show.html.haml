@@ -1,0 +1,17 @@
+- main_toolbar do |t|
+  = t.destroy resource
+  = dropdown_menu_button(:export.ta, icon: :download) do |d|
+    - d.item :standard.tl, nature: 'standard', format: :pdf
+    - d.item :check_letter.tl, nature: 'check_letter', format: :pdf
+  = t.export_to_sepa resource if resource.sepa?
+
+= main_informations do
+  = attributes_list do |l|
+    - l.attribute :number
+    - l.attribute :mode
+    - l.attribute :payments_count, datatype: :integer
+    - l.attribute :payments_sum, label: :total, datatype: :float, currency: true
+
+= cobbles do |c|
+  - c.cobble :payments do
+    = cobble_list(:payments)

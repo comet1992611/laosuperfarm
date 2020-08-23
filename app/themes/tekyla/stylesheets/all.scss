@@ -1,0 +1,70 @@
+/*
+ * This is a manifest file that'll be compiled into screen.css, which will include all the files
+ * listed below.
+ *= require flatpickr/dist/flatpickr
+ *= require flatpickr/dist/plugins/confirmDate/confirmDate
+ *= require flatpickr/dist/themes/material_blue
+ *= require_self
+ */
+
+
+
+// Core variables and mixins
+@import "variables";
+@import "mixins";
+
+// Reset
+@import "reset";
+@import "fonts";
+@import "print";
+@import 'bootstrap-sprockets';
+
+// Plugins
+@import "themes/tekyla/plugins";
+@import "bootstrap-slider";
+@import "wice_grid";
+@import "font-awesome-sprockets";
+
+// Specific
+@import "abilities";
+@import "accesses";
+@import "activities";
+@import "activity_productions";
+@import "accounts";
+@import "attachments";
+@import "bank_statements";
+@import "budget";
+@import "buttons";
+@import "beehives";
+@import "calendars";
+@import "charts";
+@import "equipments";
+@import "flatpickr";
+@import "forms";
+@import "golumns";
+@import "grid";
+@import "integrations";
+@import "interventions";
+@import "intervention_participations";
+@import "leaflet";
+@import "main";
+@import "map_layers";
+@import "modals";
+@import "naming_formats";
+@import "production_costs";
+@import "purchases";
+@import "purchase_process_reconciliation";
+@import "quick_trades";
+@import "receptions";
+@import "outgoing_payment_lists";
+@import "tables";
+@import "taskboard";
+@import "timelines";
+@import "tour";
+@import "plants";
+@import "wice_grid";
+
+@import "./components/index";
+
+// Optimization
+@import "symbolic_icons";

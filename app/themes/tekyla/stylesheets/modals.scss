@@ -1,0 +1,40 @@
+.modal {
+  text-align: center;
+  .modal-dialog {
+    display: inline-block;
+    text-align: left;
+    vertical-align: middle;
+    .modal-content {
+      .modal-header {
+        .close[data-dismiss='modal'] {
+          @include float(right);
+          background: none;
+          border: none;
+          span {
+            font-size: $fs-large;
+          }
+        }
+        h4 {
+          font-weight: bold;
+        }
+      }
+      .modal-body {
+        .modal-introduction {
+          padding: $default-gap * 2;
+        }
+        ul {
+          padding-top: round($default-gap / 2);
+          padding-botton: round($default-gap / 2);
+          @include padding-left(2em);
+
+          li {
+            list-style-type: disc;
+          }
+        }
+      }
+      .modal-footer {
+        @include text-align(right);
+      }
+    }
+  }
+}
